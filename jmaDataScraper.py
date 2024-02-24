@@ -22,10 +22,71 @@ JMA_URL = "https://www.data.jma.go.jp/multi/quake/index.html?lang=en"
 
 
 def ParseQuakeHomeJMA(url):
-    page = requests.get(url)
-    soup = BeautifulSoup(page.text, "html.parser")
+    options = webdriver.ChromeOptions()
+    driver = webdriver.Chrome(service=Service(executable_path=binary_path), options=options)
 
-    print(soup)
+    try:
+        # Open the webpage
+        driver.get(url)  # Replace with the actual URL
+
+        # Wait for the dynamic content to load
+        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'quakeindex_table')))
+
+        table = driver.find_element(By.ID, 'quakeindex_table')
+        print(table)
+        rows = table.find_elements(By.TAG_NAME, 'tr')
+        print(rows)
+
+        data = []
+        for row in rows:
+            cols = row.find_elements(By.TAG_NAME, 'td')  # or 'th' if you're extracting headers
+            data.append([col.text for col in cols])
+
+        driver.quit()
+
+        # Convert list of lists to DataFrame
+        df = pd.DataFrame(data)
+        print(df)
+
+        # If the first row contains your headers
+        df.columns = df.iloc[0]  # Set the first row as header
+        df = df[1:]  # Remove the first row from the data
+
+    except Exception as e:
+        logging.warning(f"Unable to find table html from url {url}: {e}")
+        return ""
 
 
-ParseQuakeHomeJMA(JMA_URL)
+#ParseQuakeHomeJMA(JMA_URL)
+
+url="https://www.data.jma.go.jp/multi/quake/index.html?lang=en"
+
+options = webdriver.ChromeOptions()
+driver = webdriver.Chrome(service=Service(executable_path=binary_path), options=options)
+
+
+# Open the webpage
+driver.get(url)  # Replace with the actual URL
+
+# Wait for the dynamic content to load
+WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'quakeindex_table')))
+
+table = driver.find_element(By.ID, 'quakeindex_table')
+print(table)
+rows = table.find_elements(By.TAG_NAME, 'tr')
+print(rows)
+
+data = []
+for row in rows:
+    cols = row.find_elements(By.TAG_NAME, 'td')  # or 'th' if you're extracting headers
+    data.append([col.text for col in cols])
+
+#driver.quit()
+
+# Convert list of lists to DataFrame
+df = pd.DataFrame(data)
+print(df)
+
+# If the first row contains your headers
+df.columns = df.iloc[0]  # Set the first row as header
+df = df[1:]  # Remove the first row from the data
