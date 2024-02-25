@@ -13,10 +13,10 @@ from chromedriver_py import binary_path
 from selenium.webdriver.chrome.service import Service
 
 # Custom scripts
-from utilFunctions import dataframe_preview, generate_earthquake_uid, convert_coord, convert_depth_to_float
+from utility_functions import dataframe_preview, generate_earthquake_uid, convert_coord, convert_depth_to_float
 
 
-def parse_quake_home_JMA(url):
+def parse_quake_home_jma(url):
     options = webdriver.ChromeOptions()
     driver = webdriver.Chrome(service=Service(executable_path=binary_path), options=options)
 
@@ -67,7 +67,7 @@ def parse_quake_home_JMA(url):
         return None
 
 
-def addQuakeDetailJMA(df):
+def add_quake_detail_jma(df):
     # Check if the 'Link' column exists in the DataFrame
     if 'Link' in df.columns:
         quake_detail_df = pd.DataFrame()
@@ -125,11 +125,11 @@ def get_quake_detail(url):
         return None
 
 
-def get_data_JMA(url):
+def get_data_jma(url):
     logging.info(f"Running getJMA data for url: " + url)
 
     # Get general earthquake information
-    df = parse_quake_home_JMA(url)
+    df = parse_quake_home_jma(url)
     if df is not None:
         if len(df) > 1:
             logging.info(f"Successfully ran parse quake_home_JMA" + dataframe_preview(df))
@@ -144,7 +144,7 @@ def get_data_JMA(url):
     df = df.head(3)
 
     # Add extra detail using link column
-    df = addQuakeDetailJMA(df)
+    df = add_quake_detail_jma(df)
 
     # Standardize column names and formatting
 
@@ -189,5 +189,5 @@ def get_data_JMA(url):
 
 
 # JMA Website URL
-JMA_URL = "https://www.data.jma.go.jp/multi/quake/index.html?lang=en"
-test = get_data_JMA(JMA_URL)
+jma_url = "https://www.data.jma.go.jp/multi/quake/index.html?lang=en"
+test = get_data_jma(jma_url)
