@@ -10,35 +10,36 @@
 This repository contains scripts and data related to scraping earthquake data. Below is the structure of the project:
 
 ### Scripts
-- **jmaDataScraper.py**
-- **utilFunctions.py**
-- **dailySavedown.py**
+- **daily_savedown.py**
+- **data_scraper_jma.py**
+- **utility_functions.py**
+
 
 ### Data
-- **earthquakeJMA.csv**
+- **quake_JMA.csv**
 
 
 ## Python Scripts
 
 This section details the Python scripts included in the `Scripts` directory, outlining their purposes and functionalities.
 
-- **jmaDataScraper.py**: Defines functions for scraping earthquake data from the Japan Meteorological Agency (JMA). For more information on the data source, visit [JMA Website](https://www.data.jma.go.jp).
+- **daily_savedown.py**: A Python script designed to save the scraped data systematically. It is intended to be executed as a scheduled task, such as a cron job, to ensure regular data updates without manual intervention.
 
-- **utilFunctions.py**: Contains utility functions that are used across the project. These functions provide common functionality needed by other scripts, enhancing code reusability and maintainability.
+- **data_scraper_jma.py**: Defines functions for scraping earthquake data from the Japan Meteorological Agency (JMA). For more information on the data source, visit [JMA Website](https://www.data.jma.go.jp).
 
-- **dailySavedown.py**: A Python script designed to save the scraped data systematically. It is intended to be executed as a scheduled task, such as a cron job, to ensure regular data updates without manual intervention.
+- **utility_functions.py**: Contains utility functions that are used across the project. These functions provide common functionality needed by other scripts, enhancing code reusability and maintainability.
 
 
 ## Data Files:
 
-### `earthquakeJMA.csv`
+### `quake_jma.csv`
 
 This CSV file contains earthquake data scraped from the Japan Meteorological Agency (JMA). 
 For more information on the data source, visit [JMA Website](https://www.data.jma.go.jp).
 
 #### Schema
 
-Below is the schema of the `earthquakeJMA.csv` file, detailing the columns and their respective data types:
+Below is the schema of the `quake_jma.csv` file, detailing the columns and their respective data types:
 
 | Column Name      | Data Type       |
 |------------------|-----------------|
@@ -53,4 +54,4 @@ Below is the schema of the `earthquakeJMA.csv` file, detailing the columns and t
 | depth            | float64         |
 | link             | object          |
 
-Each row in the `earthquakeJMA.csv` file represents a single earthquake event, with details such as the event ID, magnitude, source, location, time, and geographical coordinates.
+Each row in the `quote_jma.csv` file represents a single earthquake event, with details such as the event ID, magnitude, source, location, time, and geographical coordinates.
