@@ -1,6 +1,9 @@
-# Earthquake Scraping and Data Analysis
+# Earthquake Event Scraping and Data Analysis
 
 ## Overview
+
+
+
 
 ## Project File Structure
 
