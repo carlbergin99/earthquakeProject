@@ -2,6 +2,7 @@
 
 import logging
 import re
+import os
 
 
 # Configure logging
@@ -48,18 +49,39 @@ def convert_coord(coord):
     return numeric_value
 
 
-def convert_depth_to_float(depth_str):
+def convert_depth_to_float(depth_input):
     """
-    Convert a depth string (e.g., '50km', '100.5km') to a float (e.g., 50.0, 100.5).
-    This version uses regular expressions to extract the numeric part of the string.
+    Convert a depth input (string e.g., '50km', '100.5km' or float) to a float (e.g., 50.0, 100.5).
+    This version checks the input type and uses regular expressions to extract the numeric part if it is a string.
     """
-    # Use regular expression to find all numeric characters and decimal points
-    numeric_part_match = re.search(r"[-+]?[0-9]*\.?[0-9]+", depth_str)
+    # If the input is already a float, return it directly
+    if isinstance(depth_input, float):
+        return depth_input
+    elif isinstance(depth_input, str):
+        # Use regular expression to find all numeric characters and decimal points in a string
+        numeric_part_match = re.search(r"[-+]?[0-9]*\.?[0-9]+", depth_input)
 
-    if numeric_part_match:
-        numeric_part = numeric_part_match.group()
-        depth_float = float(numeric_part)
-        return depth_float
+        if numeric_part_match:
+            numeric_part = numeric_part_match.group()
+            depth_float = float(numeric_part)
+            return depth_float
+        else:
+            # Return None or raise an error if no numeric part is found
+            return None
     else:
-        # Return None or raise an error if no numeric part is found
-        return None
+        # Handle other types, e.g., int or unexpected types
+        try:
+            # Attempt to convert to float directly
+            return float(depth_input)
+        except ValueError:
+            # If conversion fails, return None or handle the error as appropriate
+            return None
+
+
+def read_list_from_txt(file_name):
+    try:
+        with open(file_name, 'r') as file:
+            # Read all lines from the file and strip newline characters
+            return [line.strip() for line in file.readlines()]
+    except FileNotFoundError:
+        return []

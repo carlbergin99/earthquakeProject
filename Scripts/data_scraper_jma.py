@@ -5,6 +5,7 @@ import pandas as pd
 import logging
 import sys
 import time
+from io import StringIO
 
 # Chrome driver libraries
 from selenium.webdriver.common.by import By
@@ -13,7 +14,7 @@ from chromedriver_py import binary_path
 from selenium.webdriver.chrome.service import Service
 
 # Custom scripts
-from utility_functions import dataframe_preview, generate_earthquake_uid, convert_coord, convert_depth_to_float
+from utility_functions import dataframe_preview, generate_earthquake_uid, convert_coord, convert_depth_to_float, read_list_from_txt
 
 
 def parse_quake_home_jma(url):
@@ -50,7 +51,7 @@ def parse_quake_home_jma(url):
         driver.quit()
 
         # Use pandas to read the HTML table data
-        df = pd.read_html(table_html)[0]
+        df = pd.read_html(StringIO(table_html))[0]
 
         # If the first row is headers, adjust accordingly
         if df.shape[0] == len(rows) - 1:
@@ -112,7 +113,7 @@ def get_quake_detail(url):
         driver.quit()
 
         # Use pandas to read the HTML table data
-        df = pd.read_html(table_html)[0]
+        df = pd.read_html(StringIO(table_html))[0]
 
         # Add link for joining to original df
         df['Link'] = url
@@ -125,23 +126,33 @@ def get_quake_detail(url):
         return None
 
 
-def get_data_jma(url):
-    logging.info(f"Running getJMA data for url: " + url)
+def get_data_jma(url, uid_file):
+    logging.info(f"Running get_data_jma data for url: " + url)
 
     # Get general earthquake information
     df = parse_quake_home_jma(url)
+
     if df is not None:
         if len(df) > 1:
-            logging.info(f"Successfully ran parse quake_home_JMA" + dataframe_preview(df))
+            logging.info(f"Successfully ran parse parse_quake_home_jma" + dataframe_preview(df))
         else:
-            logging.warning(f"Empty data frame returned from parse quake_home_JMA, exiting...")
+            logging.warning(f"Empty data frame returned from parse parse_quake_home_jma, exiting...")
             sys.exit(0)
     else:
-        logging.error(f"Failed to ran parse quake_home_JMA, exiting...")
+        logging.error(f"Failed to ran parse parse_quake_home_jma, exiting...")
         sys.exit(1)
 
-    # TODO PLEASE REMOVE AFTER TESTING
-    df = df.head(3)
+    # Filter df based on links before parsing links
+    link_list = read_list_from_txt(uid_file)
+
+    # Log information about duplicates if any
+    duplicates = df[df["Link"].isin(link_list)]
+
+    if not duplicates.empty:
+        logging.info(f"Removing {len(duplicates)} duplicate row(s) based on Link.")
+
+    # Filter out duplicates from data frame before saving
+    df = df[~df["Link"].isin(link_list)]
 
     # Add extra detail using link column
     df = add_quake_detail_jma(df)
@@ -183,11 +194,6 @@ def get_data_jma(url):
 
     df = df[df_order]
 
-    logging.info(f"Successfully ran parse get_data_JMA" + dataframe_preview(df))
+    logging.info(f"Successfully ran parse get_data_jma" + dataframe_preview(df))
 
     return df
-
-
-# JMA Website URL
-jma_url = "https://www.data.jma.go.jp/multi/quake/index.html?lang=en"
-test = get_data_jma(jma_url)
